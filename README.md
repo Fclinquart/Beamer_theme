@@ -1,0 +1,3 @@
+# Beamer style 
+
+@author = fclinquart 
