@@ -16,11 +16,11 @@
 \usepackage{Styles/packages}
 
 % =============================================================
-%  SANS-SERIF FONT  (Fira Sans)
-%  Install via:  tlmgr install fira
-%            or: sudo apt install texlive-fonts-extra
+%  SANS-SERIF FONT  (Source Sans Pro – thin, clean, academic)
+%  Install via:  sudo apt install texlive-fonts-extra
+%            or: tlmgr install sourcesanspro
 % =============================================================
-\usepackage[sfdefault, light]{FiraSans}
+\usepackage[default, light]{sourcesanspro}
 \usepackage[T1]{fontenc}
 \renewcommand{\familydefault}{\sfdefault}
 \usefonttheme{professionalfonts}
@@ -315,17 +315,20 @@
 \addtobeamertemplate{block end}  {}{\vspace{4pt}}
 
 % =============================================================
-%  FIGURE CAPTIONS  (Beamer-native, pas de package caption)
-%  Format: "Fig. 1." (gras) + texte (9pt, italique)
+%  FIGURE CAPTIONS  (Beamer-native)
+%  Format: "Fig. X" in bold italic  +  caption text in italic  (9pt)
+%  Result:  _**Fig. 1**_ _Caption text here._
 % =============================================================
 \setbeamertemplate{caption}{%
-  {\usebeamerfont{caption name}\usebeamercolor[fg]{caption name}%
-   \insertcaptionname~\insertcaptionnumber.}~%
-  {\fontsize{9pt}{11pt}\selectfont\textit{\insertcaption}}%
+  \itshape%                          % everything italic
+  {\bfseries\insertcaptionname~\insertcaptionnumber.}~%  bold "Fig. X."
+  \insertcaption%                    % caption text (italic, not bold)
 }
-\setbeamertemplate{caption label separator}{}  % géré manuellement ci-dessus
-\renewcommand{\figurename}{Fig.}
-\setbeamerfont{caption name}{series=\bfseries, size=\footnotesize}
+\setbeamertemplate{caption label separator}{}
+\AtBeginDocument{\renewcommand{\figurename}{Fig.}}
+\setbeamerfont{caption}{size=\fontsize{9pt}{11pt}\selectfont, shape=\itshape}
+\setbeamerfont{caption name}{size=\fontsize{9pt}{11pt}\selectfont,
+                              series=\bfseries, shape=\itshape}
 \setbeamercolor{caption name}{fg=UCLgray}
 
 % =============================================================
@@ -344,51 +347,125 @@
 
 % =============================================================
 %  APPENDIX SUPPORT
-%  Usage dans main.tex :
+% -------------------------------------------------------------
+%  USAGE in main.tex:
 %
-%    \appendix
+%    %--- end of normal presentation ---
+%    \thanksframe[...]
 %
-%    \aframe{Détails expérimentaux}{
-%      contenu de la slide...
-%    }
-%    \aframe{Données supplémentaires}{
-%      contenu...
-%    }
+%    %--- bibliography (always Appendix I) ---
+%    \appendixbib          % ← one command, no arguments needed
+%
+%    %--- additional appendix sections ---
+%    \appendixsec{Experimental Details}
+%    \begin{frame}{...} ... \end{frame}
+%    \begin{frame}{...} ... \end{frame}
+%
+%    \appendixsec{Supplementary Data}
+%    \begin{frame}{...} ... \end{frame}
+%
+% NUMBERING:
+%   Appendix I   : References  (always first, via \appendixbib)
+%   Appendix II  : first \appendixsec
+%   Appendix III : second \appendixsec
+%   etc.
+%
+% TOC:  each appendix section appears in \tableofcontents
+%       Use \tableofcontents[hideallsubsections] on your
+%       outline slide to keep it clean during the talk.
+%
+% SLIDE NUMBERS: roman numerals (i, ii, iii...) after \appendixbib
 % =============================================================
 
-\newcounter{appendixcount}
-\setcounter{appendixcount}{0}
+% --- Internal counter (starts at 0; \appendixbib uses I, then increments) ---
+\newcounter{appendixnum}
+\setcounter{appendixnum}{0}
 
-\apptocmd{\appendix}{%
-  % Slide d'annonce
+% --- Internal flag: have we entered appendix mode yet? ---
+\newif\if@inappendix
+\@inappendixfalse
+
+% --- Helper: draw the white sober background used on separator slides ---
+\newcommand{\ucl@appendixbg}{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[UCLwhite] (current page.south west) rectangle (current page.north east);
+    \fill[UCLblue]  (current page.south west)
+      rectangle ([xshift=5pt]current page.north west);
+    \fill[UCLcyan]  ([yshift=-3pt]current page.north west)
+      rectangle (current page.north east);
+    \fill[UCLblue]  (current page.south west)
+      rectangle ([yshift=3pt]current page.south east);
+  \end{tikzpicture}%
+}
+
+% ------------------------------------------------------------------
+%  \appendixbib
+%  • Triggers \appendix (roman slide numbers, appendixnumberbeamer)
+%  • Creates the "Appendix I : References" separator slide
+%  • Registers the section in the TOC as "Appendix I : References"
+%  • Prints the bibliography
+% ------------------------------------------------------------------
+\newcommand{\appendixbib}{%
+  % Enter appendix mode once
+  \if@inappendix\else
+    \appendix                          % appendixnumberbeamer resets frame counter
+    \setcounter{framenumber}{0}%
+    \setbeamertemplate{page number in head/foot}{\roman{framenumber}}%
+    \@inappendixtrue
+  \fi
+  \stepcounter{appendixnum}%
+  % Register in TOC
+  \section{Appendix~\Roman{appendixnum}: References}%
+  % Separator slide
   \begin{frame}[plain, noframenumbering]
-    \begin{tikzpicture}[remember picture, overlay]
-      \fill[UCLwhite] (current page.south west) rectangle (current page.north east);
-      \fill[UCLblue]  (current page.south west)
-        rectangle ([xshift=5pt]current page.north west);
-      \fill[UCLcyan]  ([yshift=-3pt]current page.north west)
-        rectangle (current page.north east);
-      \fill[UCLblue]  (current page.south west)
-        rectangle ([yshift=3pt]current page.south east);
-    \end{tikzpicture}%
+    \ucl@appendixbg
     \vfill
     \begin{center}
-      {\color{UCLcyan}\rule{0.45\linewidth}{0.8pt}}\\[0.6em]
-      {\usebeamerfont{title}\color{UCLblue} Appendices}\\[0.6em]
+      {\color{UCLcyan}\rule{0.45\linewidth}{0.8pt}}\\[0.5em]
+      {\usebeamerfont{institute}\color{UCLcyan}%
+        Appendix~\Roman{appendixnum}}\\[0.4em]
+      {\usebeamerfont{title}\color{UCLblue} References}\\[0.5em]
       {\color{UCLcyan}\rule{0.45\linewidth}{0.8pt}}
     \end{center}
     \vfill
   \end{frame}%
-  % Numérotation romaine
-  \setcounter{framenumber}{0}%
-  \setbeamertemplate{page number in head/foot}{\roman{framenumber}}%
-}{}{}
+  % Bibliography frame
+  \begin{frame}[allowframebreaks, noframenumbering]{%
+      Appendix~\Roman{appendixnum}: References}
+    \printbibliography[heading=none]
+  \end{frame}%
+}
 
-% \aframe{Titre}{Contenu}
-\newcommand{\aframe}[2]{%
-  \stepcounter{appendixcount}%
-  \begin{frame}{Appendix~\Roman{appendixcount}:~#1}
-    #2
+% ------------------------------------------------------------------
+%  \appendixsec{Title}
+%  • Creates the next numbered appendix section (II, III, IV, ...)
+%  • Registers it in the TOC
+%  • Creates a separator slide in the title-page style
+%  Subsequent \begin{frame}{...} slides belong to this section.
+% ------------------------------------------------------------------
+\newcommand{\appendixsec}[1]{%
+  % Enter appendix mode once (in case user skips \appendixbib)
+  \if@inappendix\else
+    \appendix
+    \setcounter{framenumber}{0}%
+    \setbeamertemplate{page number in head/foot}{\roman{framenumber}}%
+    \@inappendixtrue
+  \fi
+  \stepcounter{appendixnum}%
+  % Register in TOC
+  \section{Appendix~\Roman{appendixnum}: #1}%
+  % Separator slide
+  \begin{frame}[plain, noframenumbering]
+    \ucl@appendixbg
+    \vfill
+    \begin{center}
+      {\color{UCLcyan}\rule{0.45\linewidth}{0.8pt}}\\[0.5em]
+      {\usebeamerfont{institute}\color{UCLcyan}%
+        Appendix~\Roman{appendixnum}}\\[0.4em]
+      {\usebeamerfont{title}\color{UCLblue} #1}\\[0.5em]
+      {\color{UCLcyan}\rule{0.45\linewidth}{0.8pt}}
+    \end{center}
+    \vfill
   \end{frame}%
 }
 

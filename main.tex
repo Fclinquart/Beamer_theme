@@ -66,19 +66,31 @@
 %  - heading=none     : suppresses the bold "References" title
 %    inside the frame (the frametitle already serves as header)
 % ============================================================
-\section{Appendix}
-    \begin{frame}[allowframebreaks, noframenumbering]{Bibliography}
-        \printbibliography[heading=none]
- \end{frame}
-    
+% --- Fin de la présentation normale ---
+\thanksframe[Do you have any questions?]
 
+% --- Appendix I : References (toujours en premier, toujours I) ---
+\appendixbib
 
+% --- Appendix II : section supplémentaire ---
+\appendixsec{Experimental Details}
+\begin{frame}{Protocole TGA}
+  ...
+\end{frame}
+\begin{frame}{Conditions de solvolyse}
+  ...
+\end{frame}
 
-% ============================================================
-%  APPENDICES  (optional – uncomment when needed)
-%  Slides are numbered i, ii, iii … and excluded from TOC
-% ============================================================
-% \appendix
+% --- Appendix III ---
+\appendixsec{Supplementary Data}
+\begin{frame}{Courbes de traction complètes}
+  ...
+\end{frame}
 
+% --- Appendix IV ---
+\appendixsec{Chemical Characterisation}
+\begin{frame}{Spectres FTIR}
+  ...
+\end{frame}
 
 \end{document}
