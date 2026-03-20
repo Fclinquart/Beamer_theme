@@ -1,0 +1,84 @@
+
+% ============================================================
+%  main.tex  –  François Clinquart  
+%  UCLouvain / École Polytechnique de Louvain
+%  Compile : make   (or latexmk main.tex)
+% ============================================================
+
+\documentclass{Styles/beamer-style}
+
+% ============================================================
+%  BIBLIOGRAPHY
+% ============================================================
+\addbibresource{References/references.bib}
+%
+% ============================================================
+%  PRESENTATION METADATA
+% ============================================================
+
+% Short author shown in the footline
+\author[F. Clinquart]{}
+
+% Full author list with affiliation superscripts
+\addauthor{F. Clinquart}{a}
+\addauthor{Add second author}{1}
+
+% Affiliations – one line each
+\addaffil{1}{instute 1 }
+
+% Corresponding author e-mail
+\setcontact{a}{francois.clinquart@student.uclouvain.be}
+
+% Title block
+\title{Title}
+\subtitle{subtitle}
+\date{\today}
+
+% ============================================================
+\begin{document}
+
+% ============================================================
+%  TITLE SLIDE
+% ============================================================
+\begin{frame}[plain, noframenumbering]
+    \titlepage
+\end{frame}
+
+% ============================================================
+%  TABLE OF CONTENTS
+% ============================================================
+\begin{frame}{Outline}
+    \tableofcontents
+\end{frame}
+
+% ============================================================
+\section[first section]{first section}
+   
+% ============================================================
+%  THANK-YOU SLIDE  (outside sections → invisible in TOC/header)
+% ============================================================
+\thanksframe[Do you have any questions ?]
+
+% ============================================================
+%  BIBLIOGRAPHY
+%  - allowframebreaks : splits automatically over multiple slides
+%    if there are many references
+%  - heading=none     : suppresses the bold "References" title
+%    inside the frame (the frametitle already serves as header)
+% ============================================================
+\section{Appendix}
+    \begin{frame}[allowframebreaks, noframenumbering]{Bibliography}
+        \printbibliography[heading=none]
+ \end{frame}
+    
+
+
+
+% ============================================================
+%  APPENDICES  (optional – uncomment when needed)
+%  Slides are numbered i, ii, iii … and excluded from TOC
+% ============================================================
+% \appendix
+
+
+\end{document}
